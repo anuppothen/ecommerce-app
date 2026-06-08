@@ -1,0 +1,31 @@
+# Dependencies - there are installed via npm install, never committed
+node_modules/
+
+# Environment files - contains passwords and secrets, NEVER commit these
+.env
+.env.local
+.env.production
+
+# Log files
+logs/
+*.log
+
+# Mac system files - created automatically by MacOS, not part of your code
+.DS_Store
+Thumbs.db
+
+# Python cache files - we'll need these for the Order Service later
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+venv/
+*.egg-info/
+
+# IDE files - editor specific settings
+.vscode/
+.idea/
+
+# Build outputs
+Dist/
+Build/
