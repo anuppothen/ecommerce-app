@@ -41,9 +41,10 @@ services:
   # --- Microservices ---------------
 
   auth-service:
-    build:
-      context: ./auth-service
-      dockerfile: Dockerfile
+    # build:
+    #   context: ./auth-service
+    #   dockerfile: Dockerfile
+    image: anuppothen/ecommerce-auth-service:latest
     container_name: ecommerce_auth
     environment:
       PORT: 3001
@@ -63,9 +64,10 @@ services:
     restart: unless-stopped
 
   product-service:
-    build:
-      context: ./product-service
-      dockerfile: Dockerfile
+    # build:
+    #   context: ./product-service
+    #   dockerfile: Dockerfile
+    image: anuppothen/ecommerce-product-service:latest
     container_name: ecommerce_products
     environment:
       PORT: 3002
@@ -84,9 +86,10 @@ services:
     restart: unless-stopped
 
   cart-service:
-    build:
-      context: ./cart-service
-      dockerfile: Dockerfile
+    # build:
+    #   context: ./cart-service
+    #   dockerfile: Dockerfile
+    image: anuppothen/ecommerce-cart-service:latest
     container_name: ecommerce_cart
     environment:
       PORT: 3003
@@ -105,9 +108,10 @@ services:
     restart: unless-stopped
   
   api-gateway:
-    build:
-      context: ./api-gateway
-      dockerfile: Dockerfile
+    # build:
+    #   context: ./api-gateway
+    #   dockerfile: Dockerfile
+    image: anuppothen/ecommerce-api-gateway:latest
     container_name: ecommerce_gateway
     environment:
       PORT: 3000
