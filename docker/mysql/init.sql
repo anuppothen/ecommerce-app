@@ -54,3 +54,31 @@ INSERT IGNORE INTO products (name, description, price, stock, category_id, image
 ('MacBoook Pro', 'Apple laptop for Professionals', 1999.99, 20, 1, 'https://example.com/macbook.jpg'),
 ('Plain White T-Shirt', 'Comfortable cotton t-shirt', 19.99, 200, 2, 'https://example.com/tshirt.jpg'),
 ('The Great Gatsby', 'Classic American novel', 12.99, 100, 3, 'https://example.com/gatsby.jpg');
+
+-- Orders Database ---------------------------
+CREATE DATABASE IF NOT EXISTS ecommerce_orders;
+GRANT ALL PRIVILEGES ON ecommerce_orders.* TO 'ecommerce_user'@'%';
+FLUSH PRIVILEGES;
+
+USE ecommerce_orders;
+
+CREATE TABLE IF NOT EXISTS `orders` (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    status ENUM('pending', 'confirmed', 'shipped', 'delivered', 'cancelled') DEFAULT 'pending',
+    total_amount DECIMAL(10,2) NOT NULL,
+    shipping_address TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS order_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT NOT NULL,
+    product_id INT NOT NULL,
+    product_name VARCHAR(200) NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    quantity INT NOT NULL,
+    subtotal DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES `orders`(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

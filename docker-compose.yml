@@ -7,7 +7,7 @@ services:
     image: mysql:8.0
     container_name: ecommerce_mysql
     environment:
-      MYSQL_ROOT_PASSWORD: MYSQL_ROOT_PASSWORD
+      MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_USER: ecommerce_user
       MYSQL_PASSWORD: ecommerce_password
     ports:
@@ -107,6 +107,31 @@ services:
         condition: service_healthy
     restart: unless-stopped
   
+  order-service:
+    image: anuppothen/ecommerce-order-service:latest
+    container_name: ecommerce_orders
+    environment:
+      PORT: 3004
+      DB_HOST: mysql
+      DB_USER: ecommerce_user
+      DB_PASSWORD: ecommerce_password
+      DB_NAME: ecommerce_orders
+      JWT_SECRET: supersecretkey123changeThis
+      CART_SERVICE_URL: http://cart-service:3003
+      PRODUCT_SERVICE_URL: http://product-service:3002
+      NODE_ENV: production
+      LOG_LEVEL: info
+    ports:
+      - "3004:3004"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      cart-service:
+        condition: service_started
+      product-service:
+        condition: service_started
+    restart: unless-stopped
+  
   api-gateway:
     # build:
     #   context: ./api-gateway
@@ -129,6 +154,7 @@ services:
       - auth-service
       - product-service
       - cart-service
+      - order-service
     restart: unless-stopped
 
 # --- Volumes ---------------------------------
