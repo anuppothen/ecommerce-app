@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 import httpx
@@ -29,7 +29,7 @@ async def get_user_cart(user_id: int, token: str):
     try:
         async with httpx.AsyncClient() as client:
             response = await client.get(
-                f"{CART_SERVICE_URL}/api/cart",
+                f"{CART_SERVICE_URL}/",
                 headers={"Authorization": f"Bearer {token}"}
             )
             response.raise_for_status()
@@ -48,7 +48,7 @@ async def clear_user_cart(token: str):
     try:
         async with httpx.AsyncClient() as client:
             response = await client.delete(
-                f"{CART_SERVICE_URL}/api/cart",
+                f"{CART_SERVICE_URL}/",
                 headers={"Authorization": f"Bearer {token}"}
             )
             response.raise_for_status()
@@ -63,7 +63,7 @@ async def verify_product_stock(product_id: int, quantity: int):
     """
     try:
         async with httpx.AsyncClient() as client:
-            response = await client.get(f"{PRODUCT_SERVICE_URL}/api/products/{product_id}")
+            response = await client.get(f"{PRODUCT_SERVICE_URL}/{product_id}")
 
         if response.status_code == 404:
             return None
@@ -72,9 +72,9 @@ async def verify_product_stock(product_id: int, quantity: int):
         product = response.json()["product"]
 
         if product["stock"] < quantity:
-            return {"insufficient stock": True, "available": product["stock"], "product": product}
+            return {"insufficient_stock": True, "available": product["stock"], "product": product}
         
-        return {"insufficient stock": False, "product": product}
+        return {"insufficient_stock": False, "product": product}
     except httpx.HTTPError as e:
         logger.error(f"Product service unavailable: {str(e)}")
         raise HTTPException(
@@ -86,9 +86,9 @@ async def verify_product_stock(product_id: int, quantity: int):
 @router.post("/", response_model=OrderResponse, status_code=status.HTTP_201_CREATED)
 async def create_order(
     order_data: CreateOrderRequest,
+    request: Request,
     user: dict = Depends(get_current_user),
     db: Session = Depends(get_db),
-    authorization: str = Depends(lambda authorization=None: authorization)
 ):
     """
     Creates a new order from the user's current cart.
@@ -100,7 +100,10 @@ async def create_order(
     4. Clear the user's cart.
     """
     user_id = user["id"]
-    token = authorization.split(" ")[1] if authorization else None
+
+    # Extract token directly from the raw request header
+    authorization = request.headers.get("authorization", "")
+    token = authorization.replace("Bearer ", "").strip()
 
     logger.info(f"User {user_id} creating order")
 
@@ -123,7 +126,7 @@ async def create_order(
                 detail=f"Product {item['productId']} no longer exists"
             )
         
-        if stock_check["Insufficient_stock"]:
+        if stock_check["insufficient_stock"]:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Insufficient stock for {item['name']} - only {stock_check['available']} left"
@@ -133,7 +136,7 @@ async def create_order(
     new_order = Order(
         user_id=user_id,
         status=OrderStatus.pending,
-        total_amount=cart["total"],
+        total_amount=float(cart["total"]),
         shipping_address=order_data.shipping_address,
     )
     db.add(new_order)
@@ -141,13 +144,13 @@ async def create_order(
 
     # Create order items from cart items
     for item in cart["items"]:
-        order_item = OrderItem(
+        order_item = OrderItems(
             order_id=new_order.id,
             product_id=item["productId"],
             product_name=item["name"],
-            price=item["price"],
-            quantity=item["quantity"],
-            subtotal=round(item["price"] * item["quantity"], 2),
+            price=float(item["price"]),
+            quantity=int(item["quantity"]),
+            subtotal=round(float(item["price"]) * int(item["quantity"]), 2),
         )
         db.add(order_item)
     

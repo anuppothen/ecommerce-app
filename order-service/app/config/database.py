@@ -29,7 +29,7 @@ engine = create_engine(
 # -- Session Factory ------------------------------
 # A session is how we interact with the database
 # Like a single database connection in mysql2
-SessionLocal = sessionmaker(autocommit=False, autoFlush=False, bind=engine)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # -- Base Class -----------------------------------
 # All our database models will inherit from this
@@ -40,7 +40,7 @@ Base = declarative_base()
 # This function is used by FastAPI to provide a database session
 # to  each request and automatically close it when done
 def get_db():
-    db = sessionLocal()
+    db = SessionLocal()
     try:
         yield db # Provide the session to the route handler
     finally:

@@ -59,7 +59,7 @@ async def health_check():
     return {"status": "Order service is running!"}
 
 # -- Routes -------------------------------------
-app.include_router(orders.router, prefix="/api/orders", tags=["Orders"])
+app.include_router(orders.router, prefix="", tags=["Orders"])
 
 # -- Global Error Handlers ----------------------
 @app.exception_handler(Exception)
