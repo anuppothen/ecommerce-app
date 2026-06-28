@@ -16,6 +16,7 @@ RUN pip  install --no-cache-dir -r requirements.txt
 # -- Stage 3: Application Code -----------
 COPY main.py .
 COPY app/ ./app/
+COPY newrelic.ini .
 
 # -- Stage 4: Configuration --------------
 EXPOSE 3004
@@ -24,4 +25,4 @@ EXPOSE 3004
 # User uvicorn to run the FastAPI app
 # --host 0.0.0.0 makes it accessible outside the container
 # (default is 127.0.0.1 which is only accessible inside the container)
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "3004"]
+CMD ["newrelic-admin", "run-program", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "3004"]

@@ -44,7 +44,7 @@ services:
     # build:
     #   context: ./auth-service
     #   dockerfile: Dockerfile
-    image: anuppothen/ecommerce-auth-service:latest
+    image: anuppothen/ecommerce-auth-service-newrelic:latest
     container_name: ecommerce_auth
     environment:
       PORT: 3001
@@ -72,7 +72,7 @@ services:
     # build:
     #   context: ./product-service
     #   dockerfile: Dockerfile
-    image: anuppothen/ecommerce-product-service:latest
+    image: anuppothen/ecommerce-product-service-newrelic:latest
     container_name: ecommerce_products
     environment:
       PORT: 3002
@@ -96,7 +96,7 @@ services:
     # build:
     #   context: ./cart-service
     #   dockerfile: Dockerfile
-    image: anuppothen/ecommerce-cart-service:latest
+    image: anuppothen/ecommerce-cart-service-newrelic:latest
     container_name: ecommerce_cart
     environment:
       PORT: 3003
@@ -117,7 +117,7 @@ services:
     restart: unless-stopped
   
   order-service:
-    image: anuppothen/ecommerce-order-service:latest
+    image: anuppothen/ecommerce-order-service-newrelic:latest
     container_name: ecommerce_orders
     environment:
       PORT: 3004
@@ -148,7 +148,7 @@ services:
     # build:
     #   context: ./api-gateway
     #   dockerfile: Dockerfile
-    image: anuppothen/ecommerce-api-gateway:latest
+    image: anuppothen/ecommerce-api-gateway-newrelic:latest
     container_name: ecommerce_gateway
     environment:
       PORT: 3000

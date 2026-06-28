@@ -1,7 +1,7 @@
 # --- Stage 1: Base ---------------------------
 # Start from the official Node.js 18 image
 # "alpine" is a tiny Linux distribution - keeps the image small
-FROM node:18-alpine
+FROM node:22-alpine
 
 # Set the working directory inside the container
 # All subsequent commands run from here
@@ -28,4 +28,4 @@ EXPOSE 3003
 # --- Stage 5: Start ----------------------------
 # The command that runs when the container starts
 # We use "node" directly instead of "nodemon" - no auto-restarts in production
-CMD ["node", "src/index.js"]
+CMD ["npm", "start"]
