@@ -5,6 +5,7 @@ dotenv.config();
 const logger = require('./config/logger');
 const requestLogger = require('./middleware/requestLogger');
 const authRoutes = require('./routes/authRoutes');
+const seedAdminUser = require('./config/seed');
 const { log } = require('winston');
 
 const app = express();
@@ -45,8 +46,11 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
     logger.info(`Auth Service running on port ${PORT}`);
     logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
+
+    // Seed the admin user on startup
+    await seedAdminUser();
     console.log(`Auth Service running on port ${PORT}`);
 });
